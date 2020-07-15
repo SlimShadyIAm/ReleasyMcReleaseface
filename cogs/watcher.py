@@ -18,7 +18,6 @@ class MembersCog(commands.Cog):
     async def watcher(self):
         data = feedparser.parse(self.feed)
         # has the feed changed?
-        print(data.entries[0]["title"])
         # get newest post date from cached data. any new post will have a date newer than this
         max_prev_date = max([something["published_parsed"] for something in self.data_old.entries])
         # track previous post names -- so we don't repost same one again
