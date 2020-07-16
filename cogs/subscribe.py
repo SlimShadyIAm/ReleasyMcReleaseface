@@ -62,7 +62,7 @@ class Utilities(commands.Cog):
             embed.set_footer(text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url)            
             
             if role_to_ping != 0:
-                embed.add_field(name="Role pings", value=f"We will ping {role_to_ping.mention} when there is a new update.", inline=False)
+                embed.add_field(name="Role pings", value=f"We will ping {role_to_ping.mention} when there is a new update. If you don't want to ping a role, use `.subscribe devicename` wiht no role.", inline=False)
             else:
                 embed.add_field(name="Role pings", value=f"We will not ping any role when there is a new update. If you want me to ping a role, use `.subscribe devicename rolename`", inline=False)
 
