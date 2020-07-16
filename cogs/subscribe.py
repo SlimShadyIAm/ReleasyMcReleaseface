@@ -65,7 +65,7 @@ class Utilities(commands.Cog):
                 if role_to_ping.is_default():
                     role_to_ping = "@everyone"
                 
-                embed.add_field(name="Role pings", value=f"We will ping {role_to_ping.mention if isinstance(role_to_ping, discord.Role) else role_to_ping} when there is a new update. If you don't want to ping a role, use `.subscribe devicename` wiht no role.", inline=False)
+                embed.add_field(name="Role pings", value=f"We will ping {role_to_ping.mention if isinstance(role_to_ping, discord.Role) else role_to_ping} when there is a new update. If you don't want to ping a role, use `.subscribe devicename` with no role.", inline=False)
             else:
                 embed.add_field(name="Role pings", value=f"We will not ping any role when there is a new update. If you want me to ping a role, use `.subscribe devicename rolename`", inline=False)
 
