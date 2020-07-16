@@ -28,7 +28,7 @@ class Utilities(commands.Cog):
         if action == "set":
             me = discord.utils.get(ctx.guild.members, id=self.bot.user.id)
             if not channel.permissions_for(me).send_messages:
-                await ctx.send(embed=Embed(title="Warning", color=Color(value=0xeba64d), description="I don't have permission to speak in {channel.mention}"))
+                await ctx.send(embed=Embed(title="Warning", color=Color(value=0xeba64d), description=f"I don't have permission to speak in {channel.mention}"))
         
         BASE_DIR = dirname(dirname(abspath(__file__)))
         db_path = path.join(BASE_DIR, "db.sqlite")

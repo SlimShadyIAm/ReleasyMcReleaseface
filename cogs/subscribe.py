@@ -54,6 +54,7 @@ class Utilities(commands.Cog):
                 conn = sqlite3.connect(db_path)
                 c = conn.cursor()
                 c.execute(f"UPDATE configs SET {devices[device]} = ? WHERE server_id = ?;", ((role_to_ping if role_to_ping == 0 else role_to_ping.id), ctx.guild.id,))
+                conn.commit()
             finally:
                 conn.close()
             
