@@ -11,6 +11,7 @@ initial_extensions = [
                         'cogs.watcher',
                         'cogs.channel',
                         'cogs.subscribe',
+                        'cogs.errhandle',
                         'cogs.info'
                     ]
 
