@@ -10,7 +10,8 @@ initial_extensions = [
                         'cogs.admin',
                         'cogs.watcher',
                         'cogs.channel',
-                        'cogs.subscribe'
+                        'cogs.subscribe',
+                        'cogs.info'
                     ]
 
 bot = commands.Bot(command_prefix=".", description='iOS Notification Service', case_insensitive=True)

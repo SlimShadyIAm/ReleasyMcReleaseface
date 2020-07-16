@@ -86,7 +86,7 @@ class Utilities(commands.Cog):
     @subscribe.error
     async def subscribe_error(self, ctx, error):
         if isinstance(error, commands.BadArgument):
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error} If you are trying to use a role with spaces, put the name in quotes or mention it (`@role name`).'))
         elif isinstance(error, commands.MissingPermissions):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You don't have permission to do this command!"))
         else:
