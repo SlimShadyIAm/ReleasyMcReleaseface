@@ -15,27 +15,27 @@ class Utilities(commands.Cog):
     @commands.command(name='channel')
     @commands.has_permissions(manage_messages=True)
     async def channel(self, ctx, action: str, channel: discord.TextChannel=None):
-        """Choose where updates go to, or stop updates.\nExample usage: `!channel set #general` or `!channel unset`"""
+        """Choose where updates go to, or stop updates.\nExample usage: `.channel set #general` or `.channel unset`"""
 
         action = action.lower()
         if action != "set" and action != "unset":
-            raise commands.BadArgument("Argument `action` must be 'set' or 'unset'!, i.e `!channel set #general` or `!channel unset`")
+            raise commands.BadArgument("Argument `action` must be 'set' or 'unset'!, i.e `.channel set #general` or `.channel unset`")
         
         # ensure user passed in argument
         if action == "set" and channel is None:
-            raise commands.BadArgument("Please supply a channel, i.e `!channel set #general`!")
+            raise commands.BadArgument("Please supply a channel, i.e `.channel set #general`!")
         
         if action == "set":
             me = discord.utils.get(ctx.guild.members, id=self.bot.user.id)
             if not channel.permissions_for(me).send_messages:
-                await ctx.send(embed=Embed(title="Warning", color=Color(value=0xEB4634), description="I don't have permission to speak in this channel"))
+                await ctx.send(embed=Embed(title="Warning", color=Color(value=0xeba64d), description="I don't have permission to speak in {channel.mention}"))
         
         BASE_DIR = dirname(dirname(abspath(__file__)))
         db_path = path.join(BASE_DIR, "db.sqlite")
         try:
             conn = sqlite3.connect(db_path)
             c = conn.cursor()
-            c.execute("SELECT * FROM configs")
+            c.execute("SELECT * FROM configs WHERE server_id = ?;", (ctx.guild.id,))
             res = c.fetchall()
         finally:
             conn.close()
@@ -45,7 +45,7 @@ class Utilities(commands.Cog):
                 conn = sqlite3.connect(db_path)
                 c = conn.cursor()
                 c.execute("UPDATE configs SET logging_channel = ? WHERE server_id = ?;", (-1 if action == "unset" else channel.id, ctx.guild.id))
-                res = c.fetchall()
+                conn.commit()
             finally:
                 conn.close()
             

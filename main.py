@@ -9,7 +9,8 @@ async def on_message(self, message):
 initial_extensions = [
                         'cogs.admin',
                         'cogs.watcher',
-                        'cogs.channel'
+                        'cogs.channel',
+                        'cogs.subscribe'
                     ]
 
 bot = commands.Bot(command_prefix=".", description='iOS Notification Service', case_insensitive=True)
