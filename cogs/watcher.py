@@ -46,8 +46,8 @@ def checks(post, prev_posts, max_prev_date):
     filters = ["iOS", "watchOS", "macOS", "iPadOS", "tvOS"]
     device = post["title"].split(" ")[0]
     # PROD CODE
-    # return post["published_parsed"] > max_prev_date and post["title"] not in prev_posts and device in filters
-    return device in filters
+    return post["published_parsed"] > max_prev_date and post["title"] not in prev_posts and device in filters
+    # return device in filters
 
 async def check_new_entries(post, bot):
     device = post["title"].split(" ")[0]
@@ -100,8 +100,11 @@ async def push_update(bot, guild_info, device, role_id, post):
         await channel.send(f'New release! {post["title"]}\n{post["link"]}')
     else:
         role = discord.utils.get(guild.roles, id=role_id)
+        if role.is_default():
+            role = "@everyone"
+
         if role is not None:
-            await channel.send(f'{role.mention} New release! {post["title"]}\n{post["link"]}')
+            await channel.send(f'{role.mention if isinstance(role, discord.Role) else role} New release! {post["title"]}\n{post["link"]}')
         else:
             await channel.send(f'New release! {post["title"]}\n{post["link"]}')
             await channel.send(embed=Embed(title="Warning", color=Color(value=0xeba64d), description=f"It looks like role {role_id} doesn't exist. Please change this using `.subscribe devicename role`."))
