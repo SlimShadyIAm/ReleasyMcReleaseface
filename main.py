@@ -1,4 +1,5 @@
 import discord
+from discord import Color, Embed
 import os
 from discord.ext import commands
 import sqlite3
@@ -93,5 +94,30 @@ async def on_guild_join(guild):
             conn.commit()
         finally:
             conn.close()
+    intro = discord.Embed(title='Thank you for adding me to your guild!', color=Color(
+        value=0x3f78eb), description=f'Here\'s a quick start guide. The command prefix is `{bot.command_prefix}`.`')
+    intro.add_field(name="Set a channel to send updates to",
+                    value="Without this, I won't send any updates when released. \nExample usage: `.channel set #general`", inline=False)
+    intro.add_field(name="Subscribe to a device update",
+                    value="Choose a device type to subscribe to. Possible devices: iOS, macOS, watchOS, iPadOS, tvOS. \nExample usage: `.subscribe ios`\nOptionally, you can set a role to ping when I post an update: `.susbcribe iOS <role name/ID/mention>`", inline=False)
+    intro.add_field(name="Unsubscribe from a device update",
+                    value="Changed your mind about a device? Use this command.\nExample usage: `.unsubscribe iOS`", inline=False)
+    intro.add_field(name="Get an overview about your subscriptions",
+                    value="Just run `.info`", inline=False)
+    intro.add_field(name="Need help?",
+                    value="Contact SlimShadyIAm#9999 on Discord, or [@SlimShadyDev](https://twitter.com/SlimShadyDev) on Twitter!", inline=False)
 
+    channel = discord.utils.get(guild.channels, name="general")
+    if channel is not None:
+        await channel.send(embed=intro)
+    else:
+        channel = discord.utils.get(guild.channels, name="main")
+        if channel is not None:
+            await channel.send(embed=intro)
+        else:
+            try:
+                channel = guild.channels[0]
+                await channel.send(embed=intro)
+            except:
+                await guild.owner.send(embed=intro)
 bot.run(os.environ.get('IOS_TOKEN'), bot=True, reconnect=True)
