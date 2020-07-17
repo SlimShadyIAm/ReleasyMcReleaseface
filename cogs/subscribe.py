@@ -2,6 +2,8 @@ import asyncio
 from os import path
 from os.path import abspath, dirname
 import sqlite3
+import sys
+import traceback
 
 import discord
 from discord import Color, Embed
@@ -12,7 +14,7 @@ class Utilities(commands.Cog):
         self.bot = bot
     
     @commands.command(name='subscribe')
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_permissions(manage_guild=True)
     async def subscribe(self, ctx, device:str, role_to_ping:discord.Role=0):
         """Subscribe to updates from a certain device.\n
         Optionally, you can set a role to ping when an update is posted (see examples)
@@ -88,8 +90,10 @@ class Utilities(commands.Cog):
         if isinstance(error, commands.BadArgument):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error} If you are trying to use a role with spaces, put the name in quotes or mention it (`@role name`).'))
         elif isinstance(error, commands.MissingPermissions):
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You don't have permission to do this command!"))
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need `MANAGE_SERVER` permission to run this command."))
         else:
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}. Send a screenshot of this error to SlimShadyIAm#9999'))
+            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 def setup(bot):
     bot.add_cog(Utilities(bot))

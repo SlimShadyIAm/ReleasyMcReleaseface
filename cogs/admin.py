@@ -35,7 +35,7 @@ class Admin(commands.Cog):
 
     @commands.command(name='reload', hidden=True)
     @commands.is_owner()
-    async def reload(self, ctx, *, cog: str):
+    async def reload_xd(self, ctx, *, cog: str):
         """Command which Reloads a Module.
         Remember to use dot path. e.g: cogs.owner"""
 
@@ -64,6 +64,20 @@ class Admin(commands.Cog):
     async def all_cogs(self, ctx):
         """List of all cogs"""
         await ctx.send(f'All cogs: {[ext for ext in self.bot.extensions.keys()]}')
+
+    #err handling
+    @all_cogs.error
+    @reload_xd.error
+    @unload.error
+    @load.error
+    async def error(self, ctx, error):
+        if isinstance(error, commands.BadArgument):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error} If you are trying to use a role with spaces, put the name in quotes or mention it (`@role name`).'))
+        elif isinstance(error, commands.NotOwner):
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="Only the owner can use this commmand!"))
+        else:
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
+
 
 def setup(bot):
     bot.add_cog(Admin(bot))

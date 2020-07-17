@@ -1,7 +1,9 @@
 import asyncio
+import sqlite3
+import sys
+import traceback
 from os import path
 from os.path import abspath, dirname
-import sqlite3
 
 import discord
 from discord import Color, Embed
@@ -13,7 +15,7 @@ class Utilities(commands.Cog):
         self.bot = bot
     
     @commands.command(name='channel')
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_permissions(manage_guild=True)
     async def channel(self, ctx, action: str, channel: discord.TextChannel=None):
         """Choose where updates go to, or stop updates.\nExample usage: `.channel set #general` or `.channel unset`"""
 
@@ -63,8 +65,10 @@ class Utilities(commands.Cog):
         if isinstance(error, commands.BadArgument):
             await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
         elif isinstance(error, commands.MissingPermissions):
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You don't have permission to do this command!"))
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description="You need `MANAGE_SERVER` permission to run this command."))
         else:
-            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}'))
+            await ctx.send(embed=Embed(title="An error occured!", color=Color(value=0xEB4634), description=f'{error}. Send a screenshot of this error to SlimShadyIAm#9999'))
+            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 def setup(bot):
     bot.add_cog(Utilities(bot))
