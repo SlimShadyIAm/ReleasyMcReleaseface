@@ -15,7 +15,7 @@ class MembersCog(commands.Cog):
         self.feed = "https://developer.apple.com/news/releases/rss/releases.rss"
         self.data_old = feedparser.parse(self.feed)
         self.loop = self.watcher.start()
-    
+
     def cog_unload(self):
         self.loop.cancel()
 
@@ -26,11 +26,14 @@ class MembersCog(commands.Cog):
             return
         # has the feed changed?
         # get newest post date from cached data. any new post will have a date newer than this
-        max_prev_date = max([something["published_parsed"] for something in self.data_old.entries])
+        max_prev_date = max([something["published_parsed"]
+                             for something in self.data_old.entries])
         # track previous post names -- so we don't repost same one again
-        prev_posts = [something["title"] for something in self.data_old.entries]
+        prev_posts = [something["title"]
+                      for something in self.data_old.entries]
         # get new posts
-        new_posts = [post for post in data.entries if checks(post, prev_posts, max_prev_date) ]
+        new_posts = [post for post in data.entries if checks(
+            post, prev_posts, max_prev_date)]
         # if there rae new posts
         if (len(new_posts) > 0):
             # check thier tags
@@ -39,10 +42,11 @@ class MembersCog(commands.Cog):
                 await check_new_entries(post, self.bot)
 
         self.data_old = data
-        
+
     @watcher.before_loop
     async def before_printer(self):
         await self.bot.wait_until_ready()
+
 
 def checks(post, prev_posts, max_prev_date):
     filters = ["iOS", "watchOS", "macOS", "iPadOS", "tvOS"]
@@ -50,6 +54,7 @@ def checks(post, prev_posts, max_prev_date):
     # PROD CODE
     return post["published_parsed"] > max_prev_date and post["title"] not in prev_posts and device in filters
     # return device in filters
+
 
 async def check_new_entries(post, bot):
     device = post["title"].split(" ")[0]
@@ -62,12 +67,12 @@ async def check_new_entries(post, bot):
         res = c.fetchall()
     finally:
         conn.close()
-    
+
     for guild in res:
         # PROD CODE
         if guild[6] == -1:
             continue
-        
+
         index = {
             "iOS": 1,
             "macOS": 2,
@@ -75,7 +80,7 @@ async def check_new_entries(post, bot):
             "watchOS": 4,
             "tvOS": 5,
         }[device]
-        
+
         role_id = guild[index]
         # TEST CODE
         # role_id = 525250808447631370
@@ -83,6 +88,7 @@ async def check_new_entries(post, bot):
         if role_id != -1:
             print("??")
             await push_update(bot, guild, device, role_id, post)
+
 
 async def push_update(bot, guild_info, device, role_id, post):
     guild = bot.get_guild(guild_info[0])
@@ -97,7 +103,7 @@ async def push_update(bot, guild_info, device, role_id, post):
 
     if channel is None:
         return
-    
+
     if role_id == 0:
         await channel.send(f'New release! {post["title"]}\n{post["link"]}')
     else:
@@ -110,6 +116,7 @@ async def push_update(bot, guild_info, device, role_id, post):
         else:
             await channel.send(f'New release! {post["title"]}\n{post["link"]}')
             await channel.send(embed=Embed(title="Warning", color=Color(value=0xeba64d), description=f"It looks like role {role_id} doesn't exist. Please change this using `.subscribe devicename role`."))
+
 
 def setup(bot):
     bot.add_cog(MembersCog(bot))

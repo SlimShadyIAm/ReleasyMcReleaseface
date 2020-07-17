@@ -5,7 +5,7 @@ from discord.ext import commands
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
     # Hidden means it won't show up on the default help.
     @commands.command(name='load', hidden=True)
     @commands.is_owner()
@@ -48,7 +48,7 @@ class Admin(commands.Cog):
                 except Exception as e:
                     await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
                     return
-            
+
             await ctx.send('**`SUCCESS`**')
         else:
             try:
@@ -65,7 +65,7 @@ class Admin(commands.Cog):
         """List of all cogs"""
         await ctx.send(f'All cogs: {[ext for ext in self.bot.extensions.keys()]}')
 
-    #err handling
+    # err handling
     @all_cogs.error
     @reload_xd.error
     @unload.error
