@@ -22,26 +22,25 @@ class MembersCog(commands.Cog):
     @tasks.loop(seconds=20.0)
     async def watcher(self):
         data = feedparser.parse(self.feed)
-        if len(data.entries) == 0:
-            return
-        # has the feed changed?
-        # get newest post date from cached data. any new post will have a date newer than this
-        max_prev_date = max([something["published_parsed"]
-                             for something in self.data_old.entries])
-        # track previous post names -- so we don't repost same one again
-        prev_posts = [something["title"]
-                      for something in self.data_old.entries]
-        # get new posts
-        new_posts = [post for post in data.entries if checks(
-            post, prev_posts, max_prev_date)]
-        # if there rae new posts
-        if (len(new_posts) > 0):
-            # check thier tags
-            for post in new_posts:
-                print(f'NEW GOOD ENTRY: {post.title} {post.link}')
-                await check_new_entries(post, self.bot)
+        if len(data.entries) != 0:
+            # has the feed changed?
+            # get newest post date from cached data. any new post will have a date newer than this
+            max_prev_date = max([something["published_parsed"]
+                                 for something in self.data_old.entries])
+            # track previous post names -- so we don't repost same one again
+            prev_posts = [something["title"]
+                          for something in self.data_old.entries]
+            # get new posts
+            new_posts = [post for post in data.entries if checks(
+                post, prev_posts, max_prev_date)]
+            # if there rae new posts
+            if (len(new_posts) > 0):
+                # check thier tags
+                for post in new_posts:
+                    print(f'NEW GOOD ENTRY: {post.title} {post.link}')
+                    await check_new_entries(post, self.bot)
 
-        self.data_old = data
+            self.data_old = data
 
     @watcher.before_loop
     async def before_printer(self):
@@ -86,7 +85,8 @@ async def check_new_entries(post, bot):
         # role_id = 525250808447631370
 
         if role_id != -1:
-            print("??")
+            print(
+                f"pushing update of {device} to Guild {[guild[0]]}, pinging role {role_id}")
             await push_update(bot, guild, device, role_id, post)
 
 
@@ -96,9 +96,8 @@ async def push_update(bot, guild_info, device, role_id, post):
     if guild is None:
         return
 
-    guild_channels = guild.channels
     # TEST CODE
-    channel = discord.utils.get(guild_channels, id=guild_info[6])
+    channel = discord.utils.get(guild.channels, id=guild_info[6])
     # channel = discord.utils.get(guild_channels, id=621704381053534257)
 
     if channel is None:
