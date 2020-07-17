@@ -9,6 +9,7 @@ pylint = "*"
 [packages]
 "discord.py" = {git = "https://github.com/Rapptz/discord.py"}
 feedparser = "*"
+psutil = "*"
 
 [requires]
 python_version = "3.8"

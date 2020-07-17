@@ -15,6 +15,7 @@ initial_extensions = [
     'cogs.help',
     'cogs.info',
     'cogs.subscribe',
+    'cogs.stats',
     'cogs.unsubscribe',
     'cogs.watcher',
 ]
