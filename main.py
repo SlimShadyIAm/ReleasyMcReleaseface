@@ -11,6 +11,7 @@ initial_extensions = [
     'cogs.admin',
     'cogs.channel',
     'cogs.errhandle',
+    'cogs.help',
     'cogs.info',
     'cogs.subscribe',
     'cogs.unsubscribe',
@@ -21,6 +22,7 @@ bot = commands.Bot(command_prefix=".",
                    description='iOS Notification Service', case_insensitive=True)
 
 if __name__ == '__main__':
+    bot.remove_command("help")
     for extension in initial_extensions:
         bot.load_extension(extension)
 
@@ -36,7 +38,6 @@ async def on_ready():
         f'\n\nLogged in as: {bot.user.name} - {bot.user.id}\nVersion: {discord.__version__}\n')
     await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(details='for new Apple updates', state='for new Apple updates', name='for new Apple updates', type=discord.ActivityType.watching))
     print(f'Successfully logged in and booted...!')
-
     try:
         conn = sqlite3.connect('db.sqlite')
         c = conn.cursor()
