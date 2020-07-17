@@ -9,11 +9,12 @@ async def on_message(self, message):
 
 initial_extensions = [
     'cogs.admin',
-    'cogs.watcher',
     'cogs.channel',
-    'cogs.subscribe',
     'cogs.errhandle',
-    'cogs.info'
+    'cogs.info',
+    'cogs.subscribe',
+    'cogs.unsubscribe',
+    'cogs.watcher',
 ]
 
 bot = commands.Bot(command_prefix=".",
