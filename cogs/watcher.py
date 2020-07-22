@@ -2,7 +2,7 @@
 import sqlite3
 from os import path
 from os.path import abspath, dirname
-
+import time
 import discord
 import feedparser
 from discord import Color, Embed
@@ -17,6 +17,7 @@ class MembersCog(commands.Cog):
         self.loop = self.watcher.start()
         self.seen_post_titles = [something["title"]
                                  for something in self.data_old.entries]
+        # self.seen_post_titles = []
 
     def cog_unload(self):
         self.loop.cancel()
@@ -29,9 +30,9 @@ class MembersCog(commands.Cog):
             # get newest post date from cached data. any new post will have a date newer than this
             max_prev_date = max([something["published_parsed"]
                                  for something in self.data_old.entries])
-
+            # max_prev_date = time.gmtime(0)
             # get new posts
-            new_posts = [post for post in data.entries if checks(
+            new_posts = [post for post in data.entries if self.checks(
                 post, max_prev_date)]
             # if there rae new posts
             if (len(new_posts) > 0):
@@ -47,13 +48,12 @@ class MembersCog(commands.Cog):
     async def before_printer(self):
         await self.bot.wait_until_ready()
 
-
-def checks(post, max_prev_date):
-    filters = ["iOS", "watchOS", "macOS", "iPadOS", "tvOS"]
-    device = post["title"].split(" ")[0]
-    # PROD CODE
-    return post["published_parsed"] > max_prev_date and post["title"] not in self.seen_post_titles and device in filters
-    # return device in filters
+    def checks(self, post, max_prev_date):
+        filters = ["iOS", "watchOS", "macOS", "iPadOS", "tvOS"]
+        device = post["title"].split(" ")[0]
+        # PROD CODE
+        return post["published_parsed"] > max_prev_date and post["title"] not in self.seen_post_titles and device in filters
+        # return device in filters
 
 
 async def check_new_entries(post, bot):
