@@ -21,7 +21,7 @@ class MembersCog(commands.Cog):
     def cog_unload(self):
         self.loop.cancel()
 
-    @tasks.loop(seconds=20.0)
+    @tasks.loop(seconds=60.0)
     async def watcher(self):
         data = feedparser.parse(self.feed)
         if len(data.entries) != 0:
