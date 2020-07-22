@@ -15,6 +15,8 @@ class MembersCog(commands.Cog):
         self.feed = "https://developer.apple.com/news/releases/rss/releases.rss"
         self.data_old = feedparser.parse(self.feed)
         self.loop = self.watcher.start()
+        self.seen_post_titles = [something["title"]
+                                 for something in self.data_old.entries]
 
     def cog_unload(self):
         self.loop.cancel()
@@ -27,17 +29,16 @@ class MembersCog(commands.Cog):
             # get newest post date from cached data. any new post will have a date newer than this
             max_prev_date = max([something["published_parsed"]
                                  for something in self.data_old.entries])
-            # track previous post names -- so we don't repost same one again
-            prev_posts = [something["title"]
-                          for something in self.data_old.entries]
+
             # get new posts
             new_posts = [post for post in data.entries if checks(
-                post, prev_posts, max_prev_date)]
+                post, max_prev_date)]
             # if there rae new posts
             if (len(new_posts) > 0):
                 # check thier tags
                 for post in new_posts:
                     print(f'NEW GOOD ENTRY: {post.title} {post.link}')
+                    self.seen_post_titles.append(post.title)
                     await check_new_entries(post, self.bot)
 
             self.data_old = data
@@ -47,11 +48,11 @@ class MembersCog(commands.Cog):
         await self.bot.wait_until_ready()
 
 
-def checks(post, prev_posts, max_prev_date):
+def checks(post, max_prev_date):
     filters = ["iOS", "watchOS", "macOS", "iPadOS", "tvOS"]
     device = post["title"].split(" ")[0]
     # PROD CODE
-    return post["published_parsed"] > max_prev_date and post["title"] not in prev_posts and device in filters
+    return post["published_parsed"] > max_prev_date and post["title"] not in self.seen_post_titles and device in filters
     # return device in filters
 
 
