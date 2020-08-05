@@ -21,7 +21,7 @@ class Utilities(commands.Cog):
         Optionally, you can set a role to ping when an update is posted (see examples)
         Available devices: iOS, macOS, watchOS, iPadOS, tvOS\n
         Updates will be sent to the channel set by the `.channel` command, if set.\n
-        Example usage: `.subscribe ios rolename` or `.subscribe ios`"""
+        Example usage: `.subscribe ios rolename/role ID/@role` or `.subscribe ios`"""
 
         devices = {"ios": "iOS_role",
                    "macos": "macOS_role",

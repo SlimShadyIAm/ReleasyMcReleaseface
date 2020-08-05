@@ -16,7 +16,7 @@ class Utilities(commands.Cog):
         if not cog:
             """Cog listing.  What more?"""
             halp = discord.Embed(title='All commands', color=Color(value=0x3f78eb),
-                                 description='Use `.help commandname` to find out more about a command!')
+                                 description='Use `.help commandname` to find out more about a command!\n\nNeed more help? Contact the developer on [Twitter](https://twitter.com/SlimShadyDev) or add him on Discord at SlimShadyIAm#9999')
             for cogs in self.bot.commands:
                 if not cogs.hidden:
                     halp.add_field(name=f'{self.bot.command_prefix}{cogs.name}', value=cogs.help.split(
