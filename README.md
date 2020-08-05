@@ -1,7 +1,5 @@
 # Releasy McReleaseface
 
----
-
 ## What is this?
 
 A Discord bot which watches Apple's [release feed](https://developer.apple.com/news/releases/rss/releases.rss) for new updates to iOS, iPadOS, macOS, watchOS and tvOS.
