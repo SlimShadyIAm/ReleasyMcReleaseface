@@ -39,9 +39,12 @@ class Utilities(commands.Cog):
             embed.set_footer(
                 text=f'Requested by {ctx.author.name}#{ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
 
-            devices = ['iOS', 'macOS', 'iPadOS', 'watchOS', 'tvOS']
+            devices = ['iOS', 'macOS', 'iPadOS',
+                       'watchOS', 'tvOS', 'SKIP', 'newsroom']
 
             for i, device in enumerate(devices, start=1):
+                if device == 'SKIP':
+                    continue
                 role = discord.utils.get(ctx.guild.roles, id=guild_info[i])
                 if role is not None and role.is_default():
                     embed.add_field(

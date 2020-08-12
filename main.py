@@ -47,8 +47,9 @@ async def on_ready():
             "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='configs';")
         res = c.fetchone()
         if (res[0] == 0):
-            c.execute("CREATE TABLE IF NOT EXISTS configs (server_id INTEGER PRIMARY KEY, iOS_role INTEGER, macOS_role INTEGER, iPadOS_role INTEGER, watchOS_role INTEGER, tvOS_role INTEGER, logging_channel INTEGER);")
+            c.execute("CREATE TABLE IF NOT EXISTS configs (server_id INTEGER PRIMARY KEY, iOS_role INTEGER, macOS_role INTEGER, iPadOS_role INTEGER, watchOS_role INTEGER, tvOS_role INTEGER, newsroom_role INTEGER, logging_channel INTEGER);")
             c.execute("CREATE UNIQUE INDEX idx_server_id ON configs (server_id);")
+        # c.execute("ALTER TABLE configs ADD newsroom_role INTEGER DEFAULT -1;")
         conn.commit()
     finally:
         conn.close()

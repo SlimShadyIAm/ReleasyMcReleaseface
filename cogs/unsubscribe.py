@@ -25,14 +25,16 @@ class Utilities(commands.Cog):
                    "macos": "macOS_role",
                    "watchos": "watchOS_role",
                    "ipados": "iPadOS_role",
-                   "tvos": "tvOS_role"
+                   "tvos": "tvOS_role",
+                   "newsroom": "newsroom_role"
                    }
 
         devices_proper = {"ios": "iOS",
                           "macos": "macOS",
                           "watchos": "watchOS",
                           "ipados": "iPadOS",
-                          "tvos": "tvOS"
+                          "tvos": "tvOS",
+                          "newsroom": "Newsroom"
                           }
         device = device.lower()
 

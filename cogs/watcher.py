@@ -13,11 +13,14 @@ class MembersCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.feed = "https://developer.apple.com/news/releases/rss/releases.rss"
+        self.newsroom_feed = "https://www.apple.com/newsroom/rss-feed.rss"
         self.data_old = feedparser.parse(self.feed)
+        self.data_newsroom_old = feedparser.parse(self.newsroom_feed)
         self.loop = self.watcher.start()
         self.seen_post_titles = [something["title"]
                                  for something in self.data_old.entries]
-        # self.seen_post_titles = []
+        self.seen_newsroom_post_titles = [something["title"]
+                                          for something in self.data_newsroom_old.entries]
 
     def cog_unload(self):
         self.loop.cancel()
@@ -25,6 +28,7 @@ class MembersCog(commands.Cog):
     @tasks.loop(seconds=60.0)
     async def watcher(self):
         data = feedparser.parse(self.feed)
+        newsroom_data = feedparser.parse(self.newsroom_feed)
         if len(data.entries) != 0:
             # has the feed changed?
             # get newest post date from cached data. any new post will have a date newer than this
@@ -44,20 +48,40 @@ class MembersCog(commands.Cog):
 
             self.data_old = data
 
-    @watcher.before_loop
+        if len(newsroom_data.entries) != 0:
+            # has the feed changed?
+            # get newest post date from cached data. any new post will have a date newer than this
+            max_prev_date = max([something["updated_parsed"]
+                                 for something in self.data_newsroom_old.entries])
+            # max_prev_date = time.gmtime(0)
+            # get new posts
+            new_posts = [post for post in newsroom_data.entries if self.checks(
+                post, max_prev_date, True)]
+            # if there rae new posts
+            if (len(new_posts) > 0):
+                # check thier tags
+                for post in new_posts:
+                    print(f'NEW GOOD ENTRY: {post.title} {post.link}')
+                    self.seen_newsroom_post_titles.append(post.title)
+                    await check_new_entries(post, self.bot, True)
+
+            self.data_newsroom_old = data
+
+    @ watcher.before_loop
     async def before_printer(self):
         await self.bot.wait_until_ready()
 
-    def checks(self, post, max_prev_date):
-        filters = ["iOS", "watchOS", "macOS", "iPadOS", "tvOS"]
-        device = post["title"].split(" ")[0]
-        # PROD CODE
-        return post["published_parsed"] > max_prev_date and post["title"] not in self.seen_post_titles and device in filters
-        # return device in filters
+    def checks(self, post, max_prev_date, is_newsroom=False):
+        if not is_newsroom:
+            filters = ["iOS", "watchOS", "macOS", "iPadOS", "tvOS"]
+            device = post["title"].split(" ")[0]
+            return post["published_parsed"] > max_prev_date and post["title"] not in self.seen_post_titles and device in filters
+        else:
+            return post["updated_parsed"] > max_prev_date and post["title"] not in self.seen_newsroom_post_titles
 
 
-async def check_new_entries(post, bot):
-    device = post["title"].split(" ")[0]
+async def check_new_entries(post, bot, newsroom=False):
+    device = post["title"].split(" ")[0] if not newsroom else "newsroom"
     BASE_DIR = dirname(dirname(abspath(__file__)))
     db_path = path.join(BASE_DIR, "db.sqlite")
     try:
@@ -79,6 +103,7 @@ async def check_new_entries(post, bot):
             "iPadOS": 3,
             "watchOS": 4,
             "tvOS": 5,
+            "newsroom": 7,
         }[device]
 
         role_id = guild[index]
