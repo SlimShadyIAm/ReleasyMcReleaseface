@@ -69,7 +69,7 @@ async def on_ready():
             try:
                 conn = sqlite3.connect('db.sqlite')
                 c = conn.cursor()
-                c.execute("INSERT OR REPLACE INTO configs (server_id, iOS_role, macOS_role, iPadOS_role, watchOS_role, tvOS_role, logging_channel) VALUES (?, ?, ?, ?, ?, ?, ?);",
+                c.execute("INSERT OR REPLACE INTO configs (server_id, iOS_role, macOS_role, iPadOS_role, watchOS_role, tvOS_role, logging_channel) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
                           (guild.id, -1, -1, -1, -1, -1, -1, -1))
                 conn.commit()
             finally:
@@ -91,7 +91,7 @@ async def on_guild_join(guild):
         try:
             conn = sqlite3.connect('db.sqlite')
             c = conn.cursor()
-            c.execute("INSERT OR REPLACE INTO configs (server_id, iOS_role, macOS_role, iPadOS_role, watchOS_role, tvOS_role, logging_channel) VALUES (?, ?, ?, ?, ?, ?, ?);",
+            c.execute("INSERT OR REPLACE INTO configs (server_id, iOS_role, macOS_role, iPadOS_role, watchOS_role, tvOS_role, logging_channel) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
                       (guild.id, -1, -1, -1, -1, -1, -1, -1))
             conn.commit()
         finally:
