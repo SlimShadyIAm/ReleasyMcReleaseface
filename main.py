@@ -70,7 +70,7 @@ async def on_ready():
                 conn = sqlite3.connect('db.sqlite')
                 c = conn.cursor()
                 c.execute("INSERT OR REPLACE INTO configs (server_id, iOS_role, macOS_role, iPadOS_role, watchOS_role, tvOS_role, logging_channel) VALUES (?, ?, ?, ?, ?, ?, ?);",
-                          (guild.id, -1, -1, -1, -1, -1, -1))
+                          (guild.id, -1, -1, -1, -1, -1, -1, -1))
                 conn.commit()
             finally:
                 conn.close()
@@ -92,7 +92,7 @@ async def on_guild_join(guild):
             conn = sqlite3.connect('db.sqlite')
             c = conn.cursor()
             c.execute("INSERT OR REPLACE INTO configs (server_id, iOS_role, macOS_role, iPadOS_role, watchOS_role, tvOS_role, logging_channel) VALUES (?, ?, ?, ?, ?, ?, ?);",
-                      (guild.id, -1, -1, -1, -1, -1, -1))
+                      (guild.id, -1, -1, -1, -1, -1, -1, -1))
             conn.commit()
         finally:
             conn.close()
@@ -101,7 +101,7 @@ async def on_guild_join(guild):
     intro.add_field(name="Set a channel to send updates to",
                     value="Without this, I won't send any updates when released. \nExample usage: `.channel set #general`", inline=False)
     intro.add_field(name="Subscribe to a device update",
-                    value="Choose a device type to subscribe to. Possible devices: iOS, macOS, watchOS, iPadOS, tvOS. \nExample usage: `.subscribe ios`\nOptionally, you can set a role to ping when I post an update: `.susbcribe iOS <role name/ID/mention>`", inline=False)
+                    value="Choose a device/feed type to subscribe to. Possible feeds: iOS, macOS, watchOS, iPadOS, tvOS, Newsroom (Apple press releases). \nExample usage: `.subscribe ios`\nOptionally, you can set a role to ping when I post an update: `.susbcribe iOS <role name/ID/mention>`", inline=False)
     intro.add_field(name="Unsubscribe from a device update",
                     value="Changed your mind about a device? Use this command.\nExample usage: `.unsubscribe iOS`", inline=False)
     intro.add_field(name="Get an overview about your subscriptions",
