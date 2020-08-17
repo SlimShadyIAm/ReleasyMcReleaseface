@@ -47,8 +47,9 @@ async def on_ready():
             "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='configs';")
         res = c.fetchone()
         if (res[0] == 0):
-            c.execute("CREATE TABLE IF NOT EXISTS configs (server_id INTEGER PRIMARY KEY, iOS_role INTEGER, macOS_role INTEGER, iPadOS_role INTEGER, watchOS_role INTEGER, tvOS_role INTEGER, logging_channel INTEGER);")
+            c.execute("CREATE TABLE IF NOT EXISTS configs (server_id INTEGER PRIMARY KEY, iOS_role INTEGER, macOS_role INTEGER, iPadOS_role INTEGER, watchOS_role INTEGER, tvOS_role INTEGER, logging_channel INTEGER, newsroom_role INTEGER);")
             c.execute("CREATE UNIQUE INDEX idx_server_id ON configs (server_id);")
+        # c.execute("ALTER TABLE configs ADD newsroom_role INTEGER DEFAULT -1;")
         conn.commit()
     finally:
         conn.close()
@@ -68,8 +69,8 @@ async def on_ready():
             try:
                 conn = sqlite3.connect('db.sqlite')
                 c = conn.cursor()
-                c.execute("INSERT OR REPLACE INTO configs (server_id, iOS_role, macOS_role, iPadOS_role, watchOS_role, tvOS_role, logging_channel) VALUES (?, ?, ?, ?, ?, ?, ?);",
-                          (guild.id, -1, -1, -1, -1, -1, -1))
+                c.execute("INSERT OR REPLACE INTO configs (server_id, iOS_role, macOS_role, iPadOS_role, watchOS_role, tvOS_role, logging_channel, newsroom_role) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
+                          (guild.id, -1, -1, -1, -1, -1, -1, -1))
                 conn.commit()
             finally:
                 conn.close()
@@ -90,8 +91,8 @@ async def on_guild_join(guild):
         try:
             conn = sqlite3.connect('db.sqlite')
             c = conn.cursor()
-            c.execute("INSERT OR REPLACE INTO configs (server_id, iOS_role, macOS_role, iPadOS_role, watchOS_role, tvOS_role, logging_channel) VALUES (?, ?, ?, ?, ?, ?, ?);",
-                      (guild.id, -1, -1, -1, -1, -1, -1))
+            c.execute("INSERT OR REPLACE INTO configs (server_id, iOS_role, macOS_role, iPadOS_role, watchOS_role, tvOS_role, logging_channel, newsroom_role) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
+                      (guild.id, -1, -1, -1, -1, -1, -1, -1))
             conn.commit()
         finally:
             conn.close()
@@ -100,7 +101,7 @@ async def on_guild_join(guild):
     intro.add_field(name="Set a channel to send updates to",
                     value="Without this, I won't send any updates when released. \nExample usage: `.channel set #general`", inline=False)
     intro.add_field(name="Subscribe to a device update",
-                    value="Choose a device type to subscribe to. Possible devices: iOS, macOS, watchOS, iPadOS, tvOS. \nExample usage: `.subscribe ios`\nOptionally, you can set a role to ping when I post an update: `.susbcribe iOS <role name/ID/mention>`", inline=False)
+                    value="Choose a device/feed type to subscribe to. Possible feeds: iOS, macOS, watchOS, iPadOS, tvOS, Newsroom (Apple press releases). \nExample usage: `.subscribe ios`\nOptionally, you can set a role to ping when I post an update: `.susbcribe iOS <role name/ID/mention>`", inline=False)
     intro.add_field(name="Unsubscribe from a device update",
                     value="Changed your mind about a device? Use this command.\nExample usage: `.unsubscribe iOS`", inline=False)
     intro.add_field(name="Get an overview about your subscriptions",

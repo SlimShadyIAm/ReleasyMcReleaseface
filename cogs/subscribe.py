@@ -17,9 +17,9 @@ class Utilities(commands.Cog):
     @commands.command(name='subscribe')
     @commands.has_permissions(manage_guild=True)
     async def subscribe(self, ctx, device: str, role_to_ping: discord.Role = 0):
-        """Subscribe to updates from a certain device.\n
+        """Subscribe to updates from a certain device/feed.\n
         Optionally, you can set a role to ping when an update is posted (see examples)
-        Available devices: iOS, macOS, watchOS, iPadOS, tvOS\n
+        Available devices: iOS, macOS, watchOS, iPadOS, tvOS, Newsroom (Apple's press releases)\n
         Updates will be sent to the channel set by the `.channel` command, if set.\n
         Example usage: `.subscribe ios rolename/role ID/@role` or `.subscribe ios`"""
 
@@ -27,20 +27,22 @@ class Utilities(commands.Cog):
                    "macos": "macOS_role",
                    "watchos": "watchOS_role",
                    "ipados": "iPadOS_role",
-                   "tvos": "tvOS_role"
+                   "tvos": "tvOS_role",
+                   "newsroom": "newsroom_role"
                    }
 
         devices_proper = {"ios": "iOS",
                           "macos": "macOS",
                           "watchos": "watchOS",
                           "ipados": "iPadOS",
-                          "tvos": "tvOS"
+                          "tvos": "tvOS",
+                          "newsroom": "Newsroom"
                           }
         device = device.lower()
 
         if device not in devices.keys():
             raise commands.BadArgument(
-                "Please supply a valid device to subscribe to.\nAvailable devices: iOS, macOS, watchOS, iPadOS, tvOS\n i.e `!subscribe macos`.")
+                "Please supply a valid device/feed to subscribe to.\nAvailable devices: iOS, macOS, watchOS, iPadOS, tvOS, Newsroom\n i.e `!subscribe macos`.")
 
         BASE_DIR = dirname(dirname(abspath(__file__)))
         db_path = path.join(BASE_DIR, "db.sqlite")

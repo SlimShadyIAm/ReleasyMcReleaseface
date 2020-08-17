@@ -17,28 +17,30 @@ class Utilities(commands.Cog):
     @commands.command(name='unsubscribe')
     @commands.has_permissions(manage_guild=True)
     async def unsubscribe(self, ctx, device: str):
-        """Unsubscribe from updates from a certain device.\n
-        Available devices: iOS, macOS, watchOS, iPadOS, tvOS\n
+        """Unsubscribe from updates from a certain device/feed.\n
+        Available devices: iOS, macOS, watchOS, iPadOS, tvOS, Newsroom\n
         Example usage: `.unsubscribe ios`"""
 
         devices = {"ios": "iOS_role",
                    "macos": "macOS_role",
                    "watchos": "watchOS_role",
                    "ipados": "iPadOS_role",
-                   "tvos": "tvOS_role"
+                   "tvos": "tvOS_role",
+                   "newsroom": "newsroom_role"
                    }
 
         devices_proper = {"ios": "iOS",
                           "macos": "macOS",
                           "watchos": "watchOS",
                           "ipados": "iPadOS",
-                          "tvos": "tvOS"
+                          "tvos": "tvOS",
+                          "newsroom": "Newsroom"
                           }
         device = device.lower()
 
         if device not in devices.keys():
             raise commands.BadArgument(
-                "Please supply a valid device to subscribe to.\nAvailable devices: iOS, macOS, watchOS, iPadOS, tvOS\n i.e `!unsubscribe macos`.")
+                "Please supply a valid device/feed to subscribe to.\nAvailable devices: iOS, macOS, watchOS, iPadOS, tvOS, Newsroom\n i.e `!unsubscribe macos`.")
 
         BASE_DIR = dirname(dirname(abspath(__file__)))
         db_path = path.join(BASE_DIR, "db.sqlite")
