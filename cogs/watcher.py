@@ -9,75 +9,65 @@ from discord import Color, Embed
 from discord.ext import commands, tasks
 
 
+class FeedObject:
+    def __init__(self, name, url, checks):
+        self.name = name
+        self.url = url
+        self.data_old = feedparser.parse(self.url)
+        self.titles_old = [something["title"]
+                           for something in self.data_old.entries]
+        self.checks = checks
+
+
 class MembersCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.feed = "https://developer.apple.com/news/releases/rss/releases.rss"
-        self.newsroom_feed = "https://www.apple.com/newsroom/rss-feed.rss"
-        self.data_old = feedparser.parse(self.feed)
-        self.data_newsroom_old = feedparser.parse(self.newsroom_feed)
+
+        self.feeds = [
+            FeedObject(
+                "releases", "https://developer.apple.com/news/releases/rss/releases.rss", self.releases_checks),
+            FeedObject(
+                "newsroom", "https://www.apple.com/newsroom/rss-feed.rss", self.newsroom_checks)
+        ]
         self.loop = self.watcher.start()
-        self.seen_post_titles = [something["title"]
-                                 for something in self.data_old.entries]
-        self.seen_newsroom_post_titles = [something["title"]
-                                          for something in self.data_newsroom_old.entries]
 
     def cog_unload(self):
         self.loop.cancel()
 
     @tasks.loop(seconds=60.0)
     async def watcher(self):
-        data = feedparser.parse(self.feed)
-        newsroom_data = feedparser.parse(self.newsroom_feed)
-        if len(data.entries) != 0:
-            # has the feed changed?
-            # get newest post date from cached data. any new post will have a date newer than this
-            max_prev_date = max([something["published_parsed"]
-                                 for something in self.data_old.entries])
-            # max_prev_date = time.gmtime(0)
-            # get new posts
-            new_posts = [post for post in data.entries if self.checks(
-                post, max_prev_date)]
-            # if there rae new posts
-            if (len(new_posts) > 0):
-                # check thier tags
-                for post in new_posts:
-                    print(f'NEW GOOD ENTRY: {post.title} {post.link}')
-                    self.seen_post_titles.append(post.title)
-                    await check_new_entries(post, self.bot)
+        for feed in self.feeds:
+            data = feedparser.parse(feed.url)
+            if len(data.entries) != 0:
+                # has the feed changed?
+                # get newest post date from cached data. any new post will have a date newer than this
+                max_prev_date = max([something["published_parsed" if feed.name !=
+                                               "newsroom" else "updated_parsed"] for something in feed.data_old.entries])
 
-            self.data_old = data
+                # get new posts
+                new_posts = [post for post in data.entries if feed.checks(
+                    feed, post, max_prev_date)]
+                # if there rae new posts
+                if (len(new_posts) > 0):
+                    # check thier tags
+                    for post in new_posts:
+                        print(f'NEW GOOD ENTRY: {post.title} {post.link}')
+                        feed.titles_old.append(post.title)
+                        await check_new_entries(post, self.bot, newsroom=feed.name == "newsroom")
 
-        if len(newsroom_data.entries) != 0:
-            # has the feed changed?
-            # get newest post date from cached data. any new post will have a date newer than this
-            max_prev_date = max([something["updated_parsed"]
-                                 for something in self.data_newsroom_old.entries])
-            # max_prev_date = time.gmtime(0)
-            # get new posts
-            new_posts = [post for post in newsroom_data.entries if self.checks(
-                post, max_prev_date, True)]
-            # if there rae new posts
-            if (len(new_posts) > 0):
-                # check thier tags
-                for post in new_posts:
-                    print(f'NEW GOOD ENTRY: {post.title} {post.link}')
-                    self.seen_newsroom_post_titles.append(post.title)
-                    await check_new_entries(post, self.bot, True)
-
-            self.data_newsroom_old = data
+                feed.data_old = data
 
     @ watcher.before_loop
     async def before_printer(self):
         await self.bot.wait_until_ready()
 
-    def checks(self, post, max_prev_date, is_newsroom=False):
-        if not is_newsroom:
-            filters = ["iOS", "watchOS", "macOS", "iPadOS", "tvOS"]
-            device = post["title"].split(" ")[0]
-            return post["published_parsed"] > max_prev_date and post["title"] not in self.seen_post_titles and device in filters
-        else:
-            return post["updated_parsed"] > max_prev_date and post["title"] not in self.seen_newsroom_post_titles
+    def releases_checks(self, feed, post, max_prev_date):
+        filters = ["iOS", "watchOS", "macOS", "iPadOS", "tvOS"]
+        device = post["title"].split(" ")[0]
+        return post["published_parsed"] > max_prev_date and post["title"] not in feed.titles_old and device in filters
+4
+    def newsroom_checks(self, feed, post, max_prev_date):
+        return post["updated_parsed"] > max_prev_date and post["title"] not in feed.titles_old
 
 
 async def check_new_entries(post, bot, newsroom=False):
