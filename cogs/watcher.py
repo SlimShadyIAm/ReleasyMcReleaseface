@@ -7,6 +7,9 @@ import discord
 import feedparser
 from discord import Color, Embed
 from discord.ext import commands, tasks
+from asyncio import sleep
+import sys
+import traceback
 
 
 class FeedObject:
@@ -65,9 +68,17 @@ class MembersCog(commands.Cog):
         filters = ["iOS", "watchOS", "macOS", "iPadOS", "tvOS"]
         device = post["title"].split(" ")[0]
         return post["published_parsed"] > max_prev_date and post["title"] not in feed.titles_old and device in filters
-4
+
     def newsroom_checks(self, feed, post, max_prev_date):
         return post["updated_parsed"] > max_prev_date and post["title"] not in feed.titles_old
+
+    @ watcher.error
+    async def error(self, error):
+        print("A watcher error occured")
+        traceback.print_exception(
+            type(error), error, error.__traceback__, file=sys.stderr)
+        await sleep(10)
+        self.watcher.restart()
 
 
 async def check_new_entries(post, bot, newsroom=False):
