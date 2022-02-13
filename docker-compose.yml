@@ -1,0 +1,6 @@
+services:
+  releasy:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    restart: unless-stopped
